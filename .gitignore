@@ -1,0 +1,11 @@
+.DS_Store
+.php_cs*
+!.php_cs.dist
+/.idea/
+/build/
+/composer.phar
+/coverage/
+/phpunit.xml
+/var/*
+/vendor/
+.phpunit.*

@@ -1,0 +1,60 @@
+{
+    "name": "brnc/boilerplace-php-package",
+    "description": "Template for new php packages",
+    "keywords": [
+        "php"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ebln",
+            "email": "34722048+ebln@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4"
+    },
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.8",
+        "phpmd/phpmd": "^2.8",
+        "phpstan/phpstan": "^0.12",
+        "phpstan/phpstan-webmozart-assert": "^0.12",
+        "phpunit/phpunit": "^9",
+        "roave/security-advisories": "dev-master",
+        "vimeo/psalm": "^4.4"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "brnc\\Boilerplate\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "brnc\\Boilerplate\\": "tests/"
+        }
+    },
+    "archive": {
+        "exclude": [
+            "vendor/*",
+            "tests/",
+            ".*",
+            "phpunit.xml.dist",
+            "coverage/"
+        ]
+    },
+    "scripts": {
+        "php-cs-fixer": "php-cs-fixer fix -v --config=.php_cs.dist --using-cache=no --dry-run",
+        "phpunit": "phpunit --coverage-html coverage --coverage-text --colors=auto",
+        "test": [
+            "composer normalize --dry-run",
+            "psalm --find-unused-psalm-suppress",
+            "phpstan analyse",
+            "phpmd src,tests ansi naming codesize design",
+            "@php-cs-fixer",
+            "@phpunit"
+        ]
+    }
+}
