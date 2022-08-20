@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ ubuntu-20.04 ]
-        php: [ '7.4', '8.0' ]
+        php: [ '7.4', '8.0', '8.1' ]
     name: Build and test on ${{ matrix.php }}
     steps:
       - name: Checkout repository
