@@ -4,23 +4,27 @@ on: [push]
 
 jobs:
   build:
-    name: Build and test
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ ubuntu-20.04 ]
+        php: [ '7.4', '8.0' ]
+    name: Build and test on ${{ matrix.php }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Force PHP 7.4
+      - name: Force PHP ${{ matrix.php }}
         uses: nanasess/setup-php@master
         with:
-          php-version: '7.4'
+          php-version: ${{ matrix.php }}
       - name: Validate composer.json and composer.lock
         run: composer validate
       - name: Require php-cs-fixer
-        run: composer require "friendsofphp/php-cs-fixer:2.18.2" --dev --prefer-dist --no-progress
+        run: |
+          mkdir --parents ./tools/php-cs-fixer
+          composer require --working-dir=tools/php-cs-fixer friendsofphp/php-cs-fixer "friendsofphp/php-cs-fixer:3.10" --prefer-dist --no-progress
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
-      - name: Check composer.json
-        run: composer normalize --dry-run
       - name: Unit tests
         run: |
           mkdir --parents ./src ./tests
@@ -28,12 +32,15 @@ jobs:
       - name: Psalm
         run: |
           ./vendor/bin/psalm --monochrome --no-progress --stats --show-info=false
-      - name: phpstan
+      - name: DISABLED phpstan
         run: |
-          ./vendor/bin/phpstan --no-interaction --no-ansi analyse
-      - name: Mess Detector
+          echo ./vendor/bin/phpstan --no-interaction --no-ansi analyse
+      - name: Mess Detector Sources
         run: |
-          ./vendor/bin/phpmd src,tests json naming codesize design
+          ./vendor/bin/phpmd src text codesize,controversial,design,naming,unusedcode,design
+      -   name: Mess Detector Tests
+          run: |
+            ./vendor/bin/phpmd tests text codesize,controversial,design
       - name: php-cs-fixer
         run: |
-          ./vendor/bin/php-cs-fixer fix -v --config=.php_cs.dist --using-cache=no --dry-run
+          ./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix -v --config=.php-cs-fixer.dist.php --using-cache=no --dry-run
